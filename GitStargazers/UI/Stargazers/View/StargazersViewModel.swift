@@ -15,7 +15,9 @@ class StargazersViewModel {
     var users: Users = []
     var ownerName: String = ""
     var repositoryName: String = ""
-    
+    var usersIsEmpty: Bool {
+        return users.count < 1
+    }
     // MARK: - private property
     
     private var since: Int = 27
@@ -49,10 +51,14 @@ extension StargazersViewModel {
         Networking<Users>.getStargazer(owner: self.ownerName,
                                        repo: repositoryName,
                                        page: self.page, completion: {[weak self] response in
-                                        guard let self = self else { return }
+                                        guard let self = self else {
+                                            return
+                                        }
                                         switch response {
                                         case let .success(users):
-                                            guard let users = users else { return }
+                                            guard let users = users else {
+                                                return
+                                            }
                                             self.users = users
                                             self.page += 1
                                             completion(.success(users))
@@ -69,10 +75,14 @@ extension StargazersViewModel {
         Networking<Users>.getStargazer(owner: self.ownerName,
                                        repo: repositoryName,
                                        page: self.page, completion: {[weak self] response in
-                                        guard let self = self else { return }
+                                        guard let self = self else {
+                                            return
+                                        }
                                         switch response {
                                         case let .success(users):
-                                            guard let users = users else { return }
+                                            guard let users = users else {
+                                                return
+                                            }
                                             self.users.append(contentsOf: users)
                                             self.page += 1
                                             completion(.success(users))
@@ -90,7 +100,9 @@ extension StargazersViewModel {
             self.getUsers { response in
                 switch response {
                 case let .success(users):
-                    guard let users = users else { return }
+                    guard let users = users else {
+                        return
+                    }
                     completion(.success(users))
                 case let .failure(error):
                     completion(.failure(error))

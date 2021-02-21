@@ -75,7 +75,10 @@ fileprivate extension UserViewCell {
     
     // MARK: - Style
     
-    func style() {
+    func style() {        
+        self.avatar.layer.masksToBounds = true
+        self.avatar.layer.cornerRadius = 5
+        
         self.nameLabel.font = UIFont.boldSystemFont(ofSize: 19.0)
         self.nameLabel.textAlignment = .left
         self.nameLabel.textColor = .black
@@ -113,7 +116,9 @@ fileprivate extension UserViewCell {
     // MARK: - Update
     
     func update() {
-        guard let viewModel = self.cellModel else { return }
+        guard let viewModel = self.cellModel else {
+            return
+        }
         let url = URL(string: viewModel.avatarUrl)
         self.avatar.kf.setImage(with: url)
         

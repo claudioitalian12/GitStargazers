@@ -48,7 +48,9 @@ class SearchUserView: UIView {
         }
         
         self.searchUserViewModel?.loadSearchUser(searchUserName: userName, completion: {[weak self] result in
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
             switch result {
             case .success:
                 self.update()
@@ -59,6 +61,11 @@ class SearchUserView: UIView {
     }
     
     func update() {
+        guard let viewModel = self.searchUserViewModel else {
+            return
+        }
+        
+        self.usersTableView.isHidden = viewModel.usersIsEmpty
         self.usersTableView.reloadData()
     }
 }
@@ -94,7 +101,7 @@ fileprivate extension SearchUserView {
     
     func style() {
         self.backgroundColor = .white
-        
+        self.usersTableView.isHidden = true
         self.refreshControl.tintColor = .gray
     }
     
@@ -103,10 +110,10 @@ fileprivate extension SearchUserView {
     func layout() {
         self.usersTableView.translatesAutoresizingMaskIntoConstraints = false
         let usersTableViewConstraints = [
-            self.usersTableView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            self.usersTableView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
             self.usersTableView.topAnchor.constraint(equalTo: self.topAnchor),
-            self.usersTableView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            self.usersTableView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            self.usersTableView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            self.usersTableView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor)
         ]
         NSLayoutConstraint.activate(usersTableViewConstraints)
     }
@@ -115,10 +122,10 @@ fileprivate extension SearchUserView {
 @objc fileprivate extension SearchUserView {
     func refresh(sender: AnyObject) {
         self.searchUserViewModel?.refreshUsers { [weak self] response in
-            guard let self = self else { return }
-            
+            guard let self = self else {
+                return
+            }
             self.refreshControl.endRefreshing()
-            
             switch response {
             case .success:
                 self.update()
@@ -139,8 +146,12 @@ extension SearchUserView: UITableViewDataSource {
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: UserViewCell.reusableIdentifier, for: indexPath) as? UserViewCell
         
-        guard let viewModel = self.searchUserViewModel else { return UITableViewCell() }
-        guard let userViewCell = cell else { return UITableViewCell() }
+        guard let viewModel = self.searchUserViewModel else {
+            return UITableViewCell()
+        }
+        guard let userViewCell = cell else {
+            return UITableViewCell()
+        }
         let cellModel = UserViewCellModel(user: viewModel.users[indexPath.row], accessoryType: .disclosureIndicator)
         userViewCell.cellModel = cellModel
         
@@ -151,7 +162,9 @@ extension SearchUserView: UITableViewDataSource {
                    willDisplay cell: UITableViewCell,
                    forRowAt indexPath: IndexPath) {
         self.searchUserViewModel?.loadMoreUsers(index: indexPath.row, completion: { [weak self] response in
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
             
             switch response {
             case .success:
@@ -172,7 +185,9 @@ extension SearchUserView: UITableViewDelegate {
     func tableView(_ tableView: UITableView,
                    didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard let cell = tableView.cellForRow(at: indexPath)  as? UserViewCell else { return }
+        guard let cell = tableView.cellForRow(at: indexPath)  as? UserViewCell else {
+            return
+        }
         
         self.didSelectCell?(cell.cellModel?.user.userName ?? "")
     }

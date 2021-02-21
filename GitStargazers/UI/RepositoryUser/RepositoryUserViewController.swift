@@ -67,15 +67,21 @@ fileprivate extension RepositoryUserViewController {
     // MARK: - SetupInteraction
     
     func setupInteraction() {
-        guard let repositoryView = self.view as? RepositoryView else { return }
+        guard let repositoryView = self.view as? RepositoryView else {
+            return
+        }
         
         repositoryView.openErrorAlert = { [weak self] error in
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
             self.showAlert(withTitle: NetworkError.alertError.rawValue, andMessage: error.rawValue)
         }
         
         repositoryView.didSelectCell = { [weak self] repositoryName, owner in
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
             
             self.pushStargazers(repositoryName: repositoryName, owner: owner)
         }
@@ -94,7 +100,9 @@ fileprivate extension RepositoryUserViewController {
 @objc fileprivate extension RepositoryUserViewController {
     func pushStargazerAlert(sender: UIBarButtonItem) {
         showStargazerAlert(ownerName: viewModel?.owner ?? "", completion: { [weak self] ownerName, repositoryName in
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
             
             self.pushStargazers(repositoryName: repositoryName, owner: ownerName)
         })

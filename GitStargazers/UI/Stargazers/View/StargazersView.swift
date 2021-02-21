@@ -47,10 +47,11 @@ fileprivate extension StargazersView {
         
         self.stargazersTableView.dataSource = self
         self.stargazersTableView.delegate = self
-        self.stargazersTableView.register(UserViewCell.self, forCellReuseIdentifier: UserViewCell.reusableIdentifier)
-        
+        self.stargazersTableView.register(UserViewCell.self,
+                                          forCellReuseIdentifier: UserViewCell.reusableIdentifier)
         self.stargazersTableView.sendSubviewToBack(self.refreshControl)
         self.stargazersTableView.addSubview(self.refreshControl)
+        
         self.addSubview(self.stargazersTableView)
     }
     
@@ -58,7 +59,7 @@ fileprivate extension StargazersView {
     
     private func style() {
         self.backgroundColor = .white
-        
+        self.stargazersTableView.isHidden = true
         self.refreshControl.tintColor = .gray
     }
     
@@ -67,10 +68,10 @@ fileprivate extension StargazersView {
     private func layout() {
         self.stargazersTableView.translatesAutoresizingMaskIntoConstraints = false
         let usersTableViewConstraints = [
-            self.stargazersTableView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            self.stargazersTableView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
             self.stargazersTableView.topAnchor.constraint(equalTo: self.topAnchor),
-            self.stargazersTableView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            self.stargazersTableView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            self.stargazersTableView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            self.stargazersTableView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor)
         ]
         NSLayoutConstraint.activate(usersTableViewConstraints)
     }
@@ -79,8 +80,9 @@ fileprivate extension StargazersView {
     
     func update() {
             self.stargazersViewModel?.getUsers(completion: { [weak self] result in
-            guard let self = self else { return }
-            
+            guard let self = self else {
+                return
+            }
             switch result {
             case .success:
                 self.updateTableView()
@@ -93,6 +95,10 @@ fileprivate extension StargazersView {
     // MARK: - UpdateTableView
     
     func updateTableView() {
+        guard let viewModel = self.stargazersViewModel else {
+            return
+        }
+        self.stargazersTableView.isHidden = viewModel.usersIsEmpty
         self.stargazersTableView.reloadData()
     }
 }
@@ -100,10 +106,10 @@ fileprivate extension StargazersView {
 @objc fileprivate extension StargazersView {
     func refresh(sender: AnyObject) {
         self.stargazersViewModel?.refreshUsers { [weak self] response in
-            guard let self = self else { return }
-
+            guard let self = self else {
+                return
+            }
             self.refreshControl.endRefreshing()
-
             switch response {
             case .success:
                 self.updateTableView()
@@ -124,10 +130,16 @@ extension StargazersView: UITableViewDataSource {
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: UserViewCell.reusableIdentifier, for: indexPath) as? UserViewCell
         
-        guard let viewModel = self.stargazersViewModel else { return UITableViewCell() }
-        guard let userViewCell = cell else { return UITableViewCell() }
+        guard let viewModel = self.stargazersViewModel else {
+            return UITableViewCell()
+        }
+        guard let userViewCell = cell else {
+            return UITableViewCell()
+        }
         
-        let cellModel = UserViewCellModel(user: viewModel.users[indexPath.row], isInteractionEnable: false)
+        let cellModel = UserViewCellModel(user: viewModel.users[indexPath.row],
+                                          isInteractionEnable: false)
+        
         userViewCell.cellModel = cellModel
         
         return userViewCell
@@ -136,16 +148,18 @@ extension StargazersView: UITableViewDataSource {
     func tableView(_ tableView: UITableView,
                    willDisplay cell: UITableViewCell,
                    forRowAt indexPath: IndexPath) {
-        self.stargazersViewModel?.loadMoreUsers(index: indexPath.row, completion: { [weak self] response in
-            guard let self = self else { return }
-            
-            switch response {
-            case .success:
-                self.update()
-            case let .failure(error):
-                self.openErrorAlert?(error)
-            }
-        })
+        self.stargazersViewModel?.loadMoreUsers(index: indexPath.row,
+                                                completion: { [weak self] response in
+                                                    guard let self = self else {
+                                                        return
+                                                    }
+                                                    switch response {
+                                                    case .success:
+                                                        self.update()
+                                                    case let .failure(error):
+                                                        self.openErrorAlert?(error)
+                                                    }
+                                                })
     }
 }
 

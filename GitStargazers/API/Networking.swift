@@ -35,8 +35,7 @@ struct Networking<Model: Decodable> {
     static func getUsers(since: Int,
                          page: Int,
                          completion: @escaping CompletionHandler) {
-        guard let request = GitEndpoint.users(since: since, page: page).request
-            else {
+        guard let request = GitEndpoint.users(since: since, page: page).request else {
                 completion(.failure(.requestError))
                 return
         }
@@ -68,8 +67,7 @@ struct Networking<Model: Decodable> {
     static func getRepository(owner: String,
                               page: Int,
                               completion: @escaping CompletionHandler) {
-        guard let request = GitEndpoint.repository(owner: owner, page: page).request
-            else {
+        guard let request = GitEndpoint.repository(owner: owner, page: page).request else {
                 completion(.failure(.requestError))
                 return
         }
@@ -102,8 +100,7 @@ struct Networking<Model: Decodable> {
                              repo: String,
                              page: Int,
                              completion: @escaping CompletionHandler) {
-        guard let request = GitEndpoint.stargazer(owner: owner, repo: repo, page: page).request
-            else {
+        guard let request = GitEndpoint.stargazer(owner: owner, repo: repo, page: page).request else {
                 completion(.failure(.requestError))
                 return
         }

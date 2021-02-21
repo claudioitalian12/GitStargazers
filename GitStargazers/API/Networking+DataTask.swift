@@ -83,7 +83,9 @@ extension Networking {
             DispatchQueue.main.async {
                 switch response {
                 case .success(let response):
-                    guard let response = response else { return }
+                    guard let response = response else {
+                        return
+                    }
                     completion(.success(response))
                 case .failure(let error):
                     completion(.failure(error))

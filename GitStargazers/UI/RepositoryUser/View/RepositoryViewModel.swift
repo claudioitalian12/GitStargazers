@@ -14,6 +14,9 @@ class RepositoryViewModel {
     
     var repository: Repository = []
     var owner: String = ""
+    var usersIsEmpty: Bool {
+        return repository.count < 1
+    }
     
     // MARK: - private property
     
@@ -48,7 +51,9 @@ extension RepositoryViewModel {
                                                 guard let self = self else { return }
                                                 switch response {
                                                 case .success(let repository):
-                                                    guard let repository = repository else { return }
+                                                    guard let repository = repository else {
+                                                        return
+                                                    }
                                                     self.repository.append(contentsOf: repository)
                                                     self.page += 1
                                                     completion(.success(repository))
@@ -65,7 +70,9 @@ extension RepositoryViewModel {
             self.loadRepository { response in
                 switch response {
                 case let .success(repository):
-                    guard let repository = repository else { return }
+                    guard let repository = repository else {
+                        return
+                    }
                     completion(.success(repository))
                 case let .failure(error):
                     completion(.failure(error))

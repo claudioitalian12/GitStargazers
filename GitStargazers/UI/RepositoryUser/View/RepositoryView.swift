@@ -59,7 +59,7 @@ fileprivate extension RepositoryView {
     
     func style() {
         self.backgroundColor = .white
-        
+        self.repositoryCollectionView.isHidden = true
         self.repositoryCollectionView.backgroundColor = .white
     }
     
@@ -68,10 +68,10 @@ fileprivate extension RepositoryView {
     func layout() {
         self.repositoryCollectionView.translatesAutoresizingMaskIntoConstraints = false
         let repositoryCollectionViewConstraints = [
-            self.repositoryCollectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            self.repositoryCollectionView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
             self.repositoryCollectionView.topAnchor.constraint(equalTo: self.topAnchor),
-            self.repositoryCollectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            self.repositoryCollectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            self.repositoryCollectionView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            self.repositoryCollectionView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor)
         ]
         NSLayoutConstraint.activate(repositoryCollectionViewConstraints)
     }
@@ -80,11 +80,16 @@ fileprivate extension RepositoryView {
     
     func update() {
         self.repositoryViewModel?.loadRepository(completion: { [weak self] result in
-            guard let self = self else { return }
-            
+            guard let self = self else {
+                return
+            }
+            guard let viewModel = self.repositoryViewModel else {
+                return
+            }
             switch result {
             case .success:
                 self.repositoryCollectionView.reloadData()
+                self.repositoryCollectionView.isHidden = viewModel.usersIsEmpty
             case let .failure(error):
                 self.openErrorAlert?(error)
             }
@@ -101,9 +106,12 @@ extension RepositoryView: UICollectionViewDataSource {
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RepositoryCell.reusableIdentifier, for: indexPath) as? RepositoryCell
         
-        guard let viewModel = self.repositoryViewModel else { return UICollectionViewCell() }
-        guard let repositoryViewCell = cell else { return UICollectionViewCell() }
-        
+        guard let viewModel = self.repositoryViewModel else {
+            return UICollectionViewCell()
+        }
+        guard let repositoryViewCell = cell else {
+            return UICollectionViewCell()
+        }
         let cellModel = RepositoryCellViewModel(repository: viewModel.repository[indexPath.row])
         repositoryViewCell.repositoryCellViewModel = cellModel
         
@@ -114,7 +122,9 @@ extension RepositoryView: UICollectionViewDataSource {
                         willDisplay cell: UICollectionViewCell,
                         forItemAt indexPath: IndexPath) {
         self.repositoryViewModel?.loadMoreRepository(index: indexPath.row, completion: { [weak self] result in
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
             
             switch result {
             case .success:
@@ -130,9 +140,15 @@ extension RepositoryView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView,
                         didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
-        guard let cell = collectionView.cellForItem(at: indexPath) as? RepositoryCell else { return }
-        guard let repository = cell.repositoryCellViewModel?.repository else { return }
-        guard let owner = self.repositoryViewModel?.owner else { return }
+        guard let cell = collectionView.cellForItem(at: indexPath) as? RepositoryCell else {
+            return
+        }
+        guard let repository = cell.repositoryCellViewModel?.repository else {
+            return
+        }
+        guard let owner = self.repositoryViewModel?.owner else {
+            return
+        }
         
         self.didSelectCell?(repository.name, owner)
     }

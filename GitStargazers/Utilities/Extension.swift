@@ -43,9 +43,15 @@ extension UIViewController {
         let saveAction = UIAlertAction(title: "Search", style: .default, handler: { _-> Void in
             blurVisualEffectView.removeFromSuperview()
             
-            guard let fields = alertController.textFields else { return }
-            guard let ownerName = fields.first?.text else { return }
-            guard let repositoryName = fields.last?.text else { return }
+            guard let fields = alertController.textFields else {
+                return
+            }
+            guard let ownerName = fields.first?.text else {
+                return
+            }
+            guard let repositoryName = fields.last?.text else {
+                return
+            }
             
             completion(ownerName, repositoryName)
         })

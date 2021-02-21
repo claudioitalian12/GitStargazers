@@ -13,6 +13,9 @@ class SearchUserViewModel {
     // MARK: - internal property
     
     var users: Users = []
+    var usersIsEmpty: Bool {
+        return users.count < 1
+    }
     
     // MARK: - private property
     
@@ -41,10 +44,14 @@ extension SearchUserViewModel {
         Networking<Users>.getUsers(since: self.since,
                                    page: self.page,
                                    completion: {[weak self] response in
-                                    guard let self = self else { return }
+                                    guard let self = self else {
+                                        return
+                                    }
                                     switch response {
                                     case let .success(users):
-                                        guard let users = users else { return }
+                                        guard let users = users else {
+                                            return
+                                        }
                                         self.users = users
                                         self.since += 30
                                         completion(.success(users))
@@ -61,10 +68,14 @@ extension SearchUserViewModel {
         Networking<Users>.getUsers(since: self.since + 1,
                                    page: page,
                                    completion: {[weak self] response in
-                                    guard let self = self else { return }
+                                    guard let self = self else {
+                                        return
+                                    }
                                     switch response {
                                     case let .success(users):
-                                        guard let users = users else { return }
+                                        guard let users = users else {
+                                            return
+                                        }
                                         self.users.append(contentsOf: users)
                                         self.since += 30
                                         completion(.success(users))
@@ -82,7 +93,9 @@ extension SearchUserViewModel {
             self.getUsers { response in
                 switch response {
                 case let .success(users):
-                    guard let users = users else { return }
+                    guard let users = users else {
+                        return
+                    }
                     completion(.success(users))
                 case let .failure(error):
                     completion(.failure(error))
@@ -97,7 +110,9 @@ extension SearchUserViewModel {
                                              completion: {response in
                                                 switch response {
                                                 case let .success(searchResult):
-                                                    guard let searchResult = searchResult else { return }
+                                                    guard let searchResult = searchResult else {
+                                                        return
+                                                    }
                                                     self.users = searchResult.items
                                                     completion(.success(searchResult.items))
                                                 case let .failure(error):

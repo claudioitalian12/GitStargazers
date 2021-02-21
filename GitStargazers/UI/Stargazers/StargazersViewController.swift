@@ -63,10 +63,13 @@ fileprivate extension StargazersViewController {
     // MARK: - SetupInteraction
     
     func setupInteraction() {
-        guard let stargazersView = self.view as? StargazersView else { return }
-        
+        guard let stargazersView = self.view as? StargazersView else {
+            return
+        }
         stargazersView.openErrorAlert = { [weak self] error in
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
             self.showAlert(withTitle: NetworkError.alertError.rawValue, andMessage: error.rawValue)
         }
     }

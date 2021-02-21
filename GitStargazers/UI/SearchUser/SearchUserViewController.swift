@@ -47,15 +47,21 @@ class SearchUserViewController: UIViewController {
 
 fileprivate extension SearchUserViewController {
     func setupInteraction() {
-        guard let searchUserView = self.view as? SearchUserView else { return }
+        guard let searchUserView = self.view as? SearchUserView else {
+            return
+        }
         
         searchUserView.openErrorAlert = { [weak self] error in
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
             self.showAlert(withTitle: NetworkError.alertError.rawValue, andMessage: error.rawValue)
         }
         
         searchUserView.didSelectCell = { [weak self] owner in
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
             let viewModel = RepositoryViewModel(owner: owner)
             let viewController = RepositoryUserViewController(viewModel: viewModel)
             
@@ -67,7 +73,9 @@ fileprivate extension SearchUserViewController {
 @objc fileprivate extension SearchUserViewController {
     func pushStargazerAlert(sender: UIBarButtonItem) {
         showStargazerAlert(completion: { [weak self] ownerName, repositoryName in
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
             
             let stargazersViewModel = StargazersViewModel(ownerName: ownerName, repositoryName: repositoryName)
             let stargazersViewController = StargazersViewController(viewModel: stargazersViewModel)

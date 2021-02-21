@@ -66,7 +66,7 @@ extension RepositoryViewModel {
     
     func loadMoreRepository(index: Int,
                             completion: @escaping CompletionHandler) {
-        if index == displayRepositoryIndex && !self.isDownloading {
+        if index == displayRepositoryIndex * (self.page - 1) && !self.isDownloading {
             self.loadRepository { response in
                 switch response {
                 case let .success(repository):

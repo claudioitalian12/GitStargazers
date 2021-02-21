@@ -58,7 +58,7 @@ extension SearchUserViewModel {
     func getUsers(completion: @escaping CompletionHandler) {
         self.setDownloadingStatus(status: true)
         
-        Networking<Users>.getUsers(since: self.since,
+        Networking<Users>.getUsers(since: self.since + 1,
                                    page: page,
                                    completion: {[weak self] response in
                                     guard let self = self else { return }

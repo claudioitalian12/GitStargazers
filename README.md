@@ -5,6 +5,7 @@
   - [x] Target IOS 13
   - [x] No use Xib/Storyboard
   - [x] Support Iphone landscape/portrait
+  - [x] You can search Users and see all repo of a user
   - [x] Use MVVM pattern
   - [x] Write Unit Test
   
